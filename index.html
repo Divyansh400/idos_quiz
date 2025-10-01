@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>🤣 idOS Quiz — BY NUBFURY</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    /* ============================
+      Funny Premium Theme (updated)
+      - CSS is correct, but added text color to buttons for better visibility.
+      ============================ */
+
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{
+      font-family:"Poppins",sans-serif;
+      color:#fff;
+      background: radial-gradient(1200px 600px at 10% 10%, #071024 0%, transparent 20%),
+                  radial-gradient(1000px 500px at 90% 90%, rgba(9,12,35,0.6) 0%, transparent 25%),
+                  linear-gradient(135deg,#071226 0%, #081220 25%, #0d2230 60%, #111827 100%);
+      overflow-x:hidden;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      letter-spacing:0.2px;
+    }
+
+    /* Screen container */
+    .screen{display:none;min-height:100vh;padding:28px;align-items:center;justify-content:center;flex-direction:column}
+    .active{display:flex;animation:fadeIn .6s ease-out both}
+
+    @keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+    /* Header / Title */
+    h1{
+      font-size:3.6rem;
+      font-weight:900;
+      margin-bottom:8px;
+      background: linear-gradient(90deg,#ff6ec4,#4facfe,#00f2fe);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      text-shadow:0 6px 28px rgba(0,255,255,0.04), 0 0 30px rgba(79,172,254,0.06);
+      letter-spacing:2px;
+    }
+    .subtitle{
+      color:#9be9ff;
+      font-weight:300;
+      max-width:720px;
+      margin-bottom:26px;
+    }
+
+    /* Logo / character / sound button */
+    .logo{position:absolute;left:28px;top:24px;width:86px;height:86px;border-radius:20px;
+          display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#00c6ff,#0072ff);
+          box-shadow:0 8px 30px rgba(0,198,255,0.14);font-size:1.6rem}
+    .character{position:absolute;right:28px;bottom:28px;width:108px;height:108px;border-radius:18px;background:linear-gradient(135deg,#ff7aa2,#ffb36b);display:flex;align-items:center;justify-content:center;font-size:2.4rem;box-shadow:0 10px 40px rgba(255,138,0,0.18);transform-origin:center;animation:robotDance 4s ease-in-out infinite}
+    @keyframes robotDance{
+      0%{transform:translateY(0) rotate(-3deg)}
+      25%{transform:translateY(-10px) rotate(4deg)}
+      50%{transform:translateY(0) rotate(-2deg)}
+      75%{transform:translateY(-6px) rotate(3deg)}
+      100%{transform:translateY(0) rotate(-3deg)}
+    }
+
+    .sound-toggle{position:absolute;right:28px;top:28px;width:64px;height:64px;border-radius:50%;
+                  display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.06);
+                  border:1px solid rgba(255,255,255,0.06);cursor:pointer;box-shadow:0 6px 22px rgba(0,0,0,0.5)}
+    .sound-toggle i{color:#ffd86b;font-size:1.5rem}
+    .sound-toggle:hover{transform:scale(1.05);background:rgba(255,255,255,0.08)}
+
+    /* Primary button (start/restart) */
+    button.primary{
+      background:linear-gradient(90deg,#ff7aa2,#ffd86b);
+      border:none;padding:16px 32px;border-radius:12px;color:#06121a;font-weight:800;
+      font-size:1.1rem;box-shadow:0 14px 40px rgba(255,122,162,0.08), 0 2px 8px rgba(0,0,0,0.5);
+      display:inline-flex;align-items:center;gap:12px;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease;
+    }
+    button.primary:hover{transform:translateY(-6px) rotate(-1.5deg);box-shadow:0 22px 60px rgba(255,122,162,0.12)}
+    button.primary:active{transform:translateY(1px) scale(.99)}
+
+    /* Start screen special */
+    #start-screen .logo{left:36px;top:36px}
+    #start-screen .character{right:36px;bottom:80px;animation:robotBounce 2s ease-in-out infinite}
+    @keyframes robotBounce{0%{transform:translateY(0)}50%{transform:translateY(-18px)}100%{transform:translateY(0)}}
+
+    /* Quiz card */
+    .quiz-card{
+      width:min(920px,96%);
+      background:linear-gradient(180deg, rgba(14,20,28,0.86), rgba(12,18,26,0.92));
+      border-radius:18px;padding:36px;border:1px solid rgba(79,172,254,0.14);
+      box-shadow:0 30px 80px rgba(2,6,23,0.7), inset 0 0 40px rgba(0,0,0,0.18);
+      position:relative;overflow:hidden;
+    }
+    .quiz-card::before{
+      content:"";position:absolute;left:-20%;top:-60%;width:180%;height:220%;
+      background:radial-gradient(circle at 20% 30%, rgba(79,172,254,0.06), transparent 10%),
+                  radial-gradient(circle at 80% 70%, rgba(255,138,0,0.04), transparent 12%);
+      transform:rotate(8deg);pointer-events:none;
+    }
+    .quiz-card h2{font-size:1.6rem;margin:6px 0 10px;color:#e7faff;text-shadow:0 2px 12px rgba(0,200,255,0.06)}
+
+    /* image */
+    .quiz-image{
+      width:100%;max-height:300px;border-radius:12px;object-fit:cover;margin-bottom:18px;
+      border:3px solid rgba(0,242,254,0.08);box-shadow:0 10px 30px rgba(0,0,0,0.6);
+      transition:transform .45s cubic-bezier(.2,.9,.2,1),opacity .4s;
+      transform-origin:center;
+    }
+    .quiz-image.pop{transform:scale(1.03) rotate(-0.5deg)}
+
+    /* options */
+    .options{display:grid;grid-template-columns:1fr;gap:14px;margin-top:16px}
+    .options button{
+      background:linear-gradient(180deg, rgba(24,34,48,0.85), rgba(18,28,40,0.92));
+      border:1px solid rgba(79,172,254,0.06);
+      padding:14px 18px;border-radius:12px;
+      font-size:1.05rem;
+      text-align:left;
+      display:flex;align-items:center;gap:12px;
+      cursor:pointer;
+      transition:transform .18s ease,box-shadow .18s ease,background .2s;
+      box-shadow:0 8px 24px rgba(0,0,0,0.5);
+      /* Fix: Ensure button text is visible against the dark background */
+      color: #d4f7ff; 
+    }
+    .options button:hover{transform:translateX(6px) rotate(-1deg);box-shadow:0 18px 40px rgba(0,0,0,0.6)}
+    .options button:disabled{opacity:.7;cursor:not-allowed}
+    .options button .option-icon{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;background:linear-gradient(180deg,#00f2fe,#00a0ff);color:#071826;box-shadow:0 6px 18px rgba(0,242,254,0.12)}
+    
+    /* Answer text styling (inside the div) */
+    .options button > div {
+      flex: 1; 
+      color: inherit; /* Inherit color from the button, but use the previous styling for other properties */
+      font-weight: 700;
+      text-shadow: 0 0 8px rgba(0, 242, 254, 0.2), 0 0 2px rgba(0, 242, 254, 0.1);
+    }
+    /* ----------------------------------------------- */
+
+    .options button.correct{background:linear-gradient(90deg,#22c55e,#2ecc71);border-color:rgba(0,0,0,0.06);box-shadow:0 18px 50px rgba(46,204,113,0.12);transform:scale(1.01)}
+    .options button.incorrect{background:linear-gradient(90deg,#ff7a7a,#e74c3c);border-color:rgba(0,0,0,0.06);box-shadow:0 18px 40px rgba(231,76,60,0.12)}
+
+    /* wobble for fun when wrong */
+    @keyframes wobbleX {
+      0% { transform: translateX(0) }
+      15% { transform: translateX(-12px) rotate(-2deg) }
+      30% { transform: translateX(10px) rotate(2deg) }
+      45% { transform: translateX(-6px) rotate(-1deg) }
+      60% { transform: translateX(4px) rotate(1deg) }
+      75% { transform: translateX(-2px) rotate(-0.5deg) }
+      100% { transform: translateX(0) }
+    }
+
+    /* feedback */
+    #feedback{min-height:58px;margin:22px 0;font-weight:800;font-size:1.1rem;background:rgba(255,255,255,0.02);padding:10px;border-radius:10px;display:flex;align-items:center;justify-content:center;text-align:center}
+
+    /* progress + timer */
+    #progress-bar{height:12px;border-radius:10px;background:linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));overflow:hidden;margin-bottom:18px;box-shadow:inset 0 4px 10px rgba(0,0,0,0.5)}
+    #progress{height:100%;width:0%;background:linear-gradient(90deg,#4facfe,#00f2fe,#ff8a00);background-size:300% 100%;animation:progressFlow 6s linear infinite}
+    @keyframes progressFlow{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+    #timer-display{font-weight:800;font-size:1.1rem;color:#ffd86b;text-shadow:0 6px 26px rgba(255,216,107,0.06);margin-bottom:8px;display:inline-block;padding:6px 12px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01))}
+
+    /* timer warning */
+    .timer-warning{animation:timerPulse .8s ease-in-out infinite;color:#ff8a7a;box-shadow:0 12px 40px rgba(255,138,122,0.06)}
+    @keyframes timerPulse{0%{transform:translateY(0)}50%{transform:translateY(-6px)}100%{transform:translateY(0)}}
+
+    /* Score circle & results */
+    .score-circle{width:220px;height:220px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:26px auto;font-weight:900;font-size:2.8rem;border:8px solid rgba(255,255,255,0.06);box-shadow:0 30px 80px rgba(0,0,0,0.8);position:relative;overflow:hidden}
+    .score-circle .sparkle{position:absolute;width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.12);top:18%;left:10%;transform:translate(-50%,-50%);box-shadow:0 0 18px rgba(255,255,255,0.06)}
+    .excellent{background:linear-gradient(135deg,#2ecc71,#1abc9c);border-color:#ffd700}
+    .good{background:linear-gradient(135deg,#4facfe,#2980b9);border-color:#4facfe}
+    .average{background:linear-gradient(135deg,#f39c12,#e67e22);color:#0b0b0b;border-color:#f1c40f}
+    .poor{background:linear-gradient(135deg,#e74c3c,#c0392b);border-color:#ff5555}
+
+    .results-image{margin:20px auto 6px;display:flex;justify-content:center}
+    .results-image img{border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,0.6);max-width:220px;height:140px;object-fit:cover;border:3px solid rgba(125,245,255,0.12)}
+    #results-message{font-size:1.6rem;margin:14px 0;font-weight:900;text-shadow:0 8px 40px rgba(0,0,0,0.6)}
+
+    /* stats */
+    .stats{display:flex;gap:18px;justify-content:center;margin-bottom:26px;flex-wrap:wrap}
+    .stat-box{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:12px 18px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);min-width:140px}
+    .stat-box div:first-child{font-weight:600;opacity:0.85}
+    .stat-value{font-size:1.8rem;font-weight:900;color:#00f2fe;margin-top:6px;text-shadow:0 12px 40px rgba(0,242,254,0.06)}
+
+    /* confetti pieces (size variants) */
+    .confetti{position:absolute;width:8px;height:8px;animation:confetti 5s ease-in-out forwards;border-radius:2px}
+    @keyframes confetti{0%{transform:translateY(0) rotate(0deg);opacity:1}100%{transform:translateY(110vh) rotate(720deg);opacity:0}}
+
+    /* small helper animations */
+    @keyframes popIn {from{transform:scale(.96);opacity:0}to{transform:scale(1);opacity:1}}
+    .pop{animation:popIn .48s cubic-bezier(.2,.9,.2,1) both}
+
+    /* small responsive tweaks */
+    @media (max-width:720px){
+      h1{font-size:2.2rem}
+      .quiz-card{padding:22px}
+      .score-circle{width:170px;height:170px;font-size:2rem}
+      .quiz-image{max-height:180px}
+    }
+
+  </style>
+</head>
+<body>
+    <div id="confetti-container" style="position:fixed;width:100%;height:100%;pointer-events:none;z-index:120;display:none"></div>
+
+    <div id="start-screen" class="screen active">
+    <div class="logo"><i class="fas fa-cube"></i></div>
+
+    <button class="sound-toggle" id="sound-toggle-start" onclick="toggleSound()">
+      <i class="fas fa-volume-up"></i>
+    </button>
+
+    <h1>🤣 idOS Quiz — BY NUBFURY</h1>
+    <p class="subtitle">Test your idOS knowledge — with jokes, neon, and confetti. Try not to roast your keyboard.</p>
+
+    <div class="character" title="Mr. Bot">🤖</div>
+
+    <div style="margin-top:28px">
+      <button class="primary" onclick="startQuiz()"><i class="fas fa-play-circle"></i> Start Quiz</button>
+    </div>
+  </div>
+
+    <div id="quiz-screen" class="screen">
+    <button class="sound-toggle" id="sound-toggle-quiz" onclick="toggleSound()">
+      <i class="fas fa-volume-up"></i>
+    </button>
+
+    <div class="quiz-card" role="region" aria-label="Quiz Card">
+      <div id="progress-bar" style="margin-bottom:12px"><div id="progress"></div></div>
+
+      <div id="timer-display">Time Left: <span id="time-left-value">20</span>s</div>
+
+      <img id="question-image" class="quiz-image" src="" alt="Question image" />
+
+      <h2 id="question-text">Question text</h2>
+
+      <div class="options" id="options"></div>
+
+      <div id="feedback" aria-live="polite"></div>
+
+      <div style="display:flex;justify-content:center;margin-top:14px">
+        <button id="next-button" onclick="nextQuestion()" style="display:none" class="primary"><i class="fas fa-arrow-right"></i> Next</button>
+      </div>
+    </div>
+  </div>
+
+    <div id="results-screen" class="screen">
+    <button class="sound-toggle" id="sound-toggle-results" onclick="toggleSound()">
+      <i class="fas fa-volume-up"></i>
+    </button>
+
+    <h1>🎉 Results</h1>
+
+    <div id="score-circle" class="score-circle">
+      <span id="score-percentage">0%</span>
+      <div class="sparkle" style="display:none"></div>
+    </div>
+
+    <div class="results-image" id="results-image"></div>
+    <div id="results-message"></div>
+
+    <div class="stats">
+      <div class="stat-box"><div>Correct</div><div id="correct-count" class="stat-value">0</div></div>
+      <div class="stat-box"><div>Incorrect</div><div id="incorrect-count" class="stat-value">0</div></div>
+      <div class="stat-box"><div>Total</div><div id="total-count" class="stat-value">0</div></div>
+    </div>
+
+    <div style="display:flex;gap:14px;justify-content:center">
+      <button class="primary" onclick="restartQuiz()"><i class="fas fa-redo"></i> Restart Quiz</button>
+    </div>
+  </div>
+
+    <audio id="bgMusic" loop preload="auto">
+      <source src="./audio/bg_music.mp3" type="audio/mpeg" />
+    </audio>
+    <audio id="correctSound" preload="auto">
+      <source src="./audio/funny_correct.mp3" type="audio/mpeg" />
+    </audio>
+    <audio id="wrongSound" preload="auto">
+      <source src="./audio/wrong_sfx.mp3" type="audio/mpeg" />
+    </audio>
+    <audio id="hoverSound" preload="auto">
+      <source src="./audio/click_sfx.mp3" type="audio/mpeg" />
+    </audio>
+    <audio id="clickSound" preload="auto">
+      <source src="./audio/click_sfx.mp3" type="audio/mpeg" />
+    </audio>
+    <audio id="nextSound" preload="auto">
+      <source src="./audio/click_sfx.mp3" type="audio/mpeg" />
+    </audio>
+    <audio id="resultsSound" preload="auto">
+      <source src="./audio/win_sfx.mp3" type="audio/mpeg" />
+    </audio>
+
+  <script>
+    /* ========================
+      Quiz Logic (Unchanged from original structure)
+      ======================== */
+
+    const quizData = [
+      { question: "What is idOS? (The secret sauce of decentralized identity)", options: ["A. A centralized identity management system (yawn)","B. A decentralized storage and access management network for user data (bingo!)","C. A stablecoin (definitely not a coin)","D. A blockchain for gaming (close, but no cigar)"], answer: "B", image: "https://miro.medium.com/v2/resize:fit:1400/1*eN4oLwEukgqS0bkkCm1cag.png" },
+      { question: "Which of the following is the idOS Storage Network designed for? (Hint: It's all about keeping your stuff safe from ninjas)", options: ["A. Mining cryptocurrencies (too much work)","B. Executing smart contracts only (boring!)","C. Storing user data in a self-sovereign, encrypted way (the VIP vault)","D. Running decentralized exchanges (a bridge too far)"], answer: "C", image: "https://cdn-icons-png.flaticon.com/512/2920/2920323.png" },
+      { question: "What problem does idOS aim to solve in the onchain financial world? (The ultimate form of recycling)", options: ["A. Speeding up block confirmations (that's the chain's job)","B. KYC re-usability (i.e. being able to reuse identity verification) (No need to prove you're human 50 times!)","C. Low token liquidity (let the traders handle that)","D. Cross-chain bridge security issues (spooky)"], answer: "B", image: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png" },
+      { question: "Which of these is not a feature of idOS? (One of these is a total villain)", options: ["A. Chain-agnostic design (friendly with everyone)","B. Composable modules (like LEGO for identity)","C. User data availability as a priority (always open for business)","D. Central authority controlling users’ keys (the worst plot twist)"], answer: "D", image: "https://cdn-icons-png.flaticon.com/512/1048/1048947.png" },
+      { question: "How does idOS plan to meter usage of its Storage Network? (Who's paying the data rent?)", options: ["A. Via transaction fees (a classic move)","B. Through smart contracts on the Economy Network (on Arbitrum Orbit) (The clever contract!)","C. By charging monthly subscription fees (Ew, a paywall)","D. Using off-chain billing systems (too traditional)"], answer: "B", image: "https://cryptologos.cc/logos/arbitrum-arb-logo.png" },
+      { question: "Which of the following is true about the idOS Consortium? (It's a party, not a monarchy!)", options: ["A. It is a single company controlling idOS (boring dictatorship)","B. It is a group of ecosystems and industry players collaborating (The cool kids' table)","C. It only includes blockchain gaming companies (they need more friends)","D. It runs idOS as a purely closed system (a big, scary door)"], answer: "B", image: "https://cdn-icons-png.flaticon.com/512/4813/4813910.png" },
+      { question: "What does “self-custodial data” mean in the context of idOS? (You are the master of your data universe!)", options: ["A. Data stored entirely on user hardware, never online (too safe)","B. Data where only the user has the private keys and controls access (You've got the key!)","C. Data managed only by centralized servers (nope)","D. Data with no encryption (a recipe for chaos)"], answer: "B", image: "https://cdn-icons-png.flaticon.com/512/3064/3064197.png" },
+      { question: "Which flow is not explicitly mentioned as a “Key flow” in the idOS docs? (One of these is just a vibe)", options: ["A. Data flows (the obvious one)","B. Encryption flows (the essential cloak)","C. Token flows (it sounds important, but is it a *key* flow?)","D. Biometrics / FaceSign flows (the futuristic handshake)"], answer: "C", image: "https://cdn-icons-png.flaticon.com/512/3176/3176292.png" },
+      { question: "Why is idOS described as “chain-agnostic”? (It's a social butterfly 🦋)", options: ["A. It only works on one specific chain (so lonely)","B. It can connect to and support multiple blockchain ecosystems (It loves all chains!)","C. It avoids blockchains entirely (then what's the point?)","D. It uses a private chain exclusively (secret society)"], answer: "B", image: "https://cdn-icons-png.flaticon.com/512/2103/2103832.png" },
+      { question: "Which of these is an example use case mentioned for idOS? (Where the rubber meets the road)", options: ["A. Gaming asset storage (maybe one day)","B. Social media identity (a digital selfie)","C. Neobank / wallet integration (The fancy new bank ID)","D. Decentralized file sharing only (it's more sophisticated than that)"], answer: "C", "image": "https://cdn-icons-png.flaticon.com/512/1179/1179069.png" }
+    ];
+
+    // Game state
+    let currentQuestion = 0;
+    let score = 0;
+    let isSoundOn = true;
+    let timer;
+    const TOTAL_TIME = 20;
+    let timeLeft = TOTAL_TIME;
+
+    // DOM Elements
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultsScreen = document.getElementById("results-screen");
+    const questionText = document.getElementById("question-text");
+    const questionImage = document.getElementById("question-image");
+    const optionsDiv = document.getElementById("options");
+    const feedbackDiv = document.getElementById("feedback");
+    const progressBar = document.getElementById("progress");
+    const scoreCircle = document.getElementById("score-circle");
+    const scorePercentage = document.getElementById("score-percentage");
+    const resultsImage = document.getElementById("results-image");
+    const resultsMessage = document.getElementById("results-message");
+    const correctCount = document.getElementById("correct-count");
+    const incorrectCount = document.getElementById("incorrect-count");
+    const totalCount = document.getElementById("total-count");
+    const nextButton = document.getElementById("next-button");
+    const timeLeftDisplay = document.getElementById("time-left-value");
+    const timerDisplay = document.getElementById("timer-display");
+    const confettiContainer = document.getElementById("confetti-container");
+
+    // Audio elements
+    const bgMusic = document.getElementById("bgMusic");
+    const correctSound = document.getElementById("correctSound");
+    const wrongSound = document.getElementById("wrongSound");
+    const hoverSound = document.getElementById("hoverSound");
+    const clickSound = document.getElementById("clickSound");
+    const nextSound = document.getElementById("nextSound");
+    const resultsSound = document.getElementById("resultsSound");
+
+    const allSFX = [correctSound, wrongSound, hoverSound, clickSound, nextSound, resultsSound];
+
+    // Play audio (robust)
+    function playAudio(audioElement) {
+      if (!isSoundOn) return;
+      // restart sfx
+      if (audioElement !== bgMusic) audioElement.currentTime = 0;
+      const p = audioElement.play();
+      if (p !== undefined) {
+        p.catch(err => { console.warn("Audio play prevented:", err); });
+      }
+    }
+
+    // Initialize
+    function init() {
+      // add hover/click sfx for buttons (except sound-toggle)
+      document.querySelectorAll("button:not(.sound-toggle)").forEach(btn=>{
+        btn.addEventListener("mouseenter", ()=> playAudio(hoverSound));
+        btn.addEventListener("click", function(){ if(this.id!=='next-button') playAudio(clickSound); });
+      });
+
+      // update total count
+      totalCount.textContent = quizData.length;
+
+      updateSoundToggleIcon();
+      // mute until user interacts
+      [bgMusic,...allSFX].forEach(a=>{ a.muted = true; a.volume = 0.5; });
+    }
+
+    // sound toggle icon update
+    function updateSoundToggleIcon(){
+      const icon = isSoundOn ? '<i class="fas fa-volume-up"></i>' : '<i class="fas fa-volume-mute"></i>';
+      document.getElementById("sound-toggle-start").innerHTML = icon;
+      if(document.getElementById("sound-toggle-quiz")) document.getElementById("sound-toggle-quiz").innerHTML = icon;
+      if(document.getElementById("sound-toggle-results")) document.getElementById("sound-toggle-results").innerHTML = icon;
+    }
+
+    // toggle sound
+    function toggleSound(){
+      isSoundOn = !isSoundOn;
+      updateSoundToggleIcon();
+      if(isSoundOn){
+        [bgMusic,...allSFX].forEach(a=>a.muted=false);
+        playAudio(bgMusic);
+      } else {
+        bgMusic.pause();
+      }
+    }
+
+    // start quiz
+    function startQuiz(){
+      // unmute attempt to satisfy autoplay policies
+      if(bgMusic.muted){
+        [bgMusic,...allSFX].forEach(a=>a.muted=false);
+        const p = bgMusic.play();
+        if(p!==undefined) p.catch(()=>{/* ignore */});
+      }
+      startScreen.classList.remove("active");
+      quizScreen.classList.add("active");
+      currentQuestion = 0;
+      score = 0;
+      loadQuestion();
+    }
+
+    // load question
+    function loadQuestion(){
+      const q = quizData[currentQuestion];
+      questionText.textContent = q.question;
+      nextButton.style.display = "none";
+
+      // image fade/pop
+      questionImage.classList.remove("pop");
+      questionImage.style.opacity = '0';
+      setTimeout(()=>{
+        questionImage.src = q.image || "https://via.placeholder.com/600x300?text=No+Image";
+        questionImage.onerror = function(){this.src = "https://via.placeholder.com/600x300?text=Image+Not+Available";}
+        questionImage.style.opacity = '1';
+        setTimeout(()=>questionImage.classList.add("pop"), 60);
+      }, 90);
+
+      optionsDiv.innerHTML = "";
+      q.options.forEach(opt=>{
+        const btn = document.createElement("button");
+        // Corrected HTML structure to ensure text visibility
+        btn.innerHTML = `<span class="option-icon">${opt.charAt(0)}</span><div>${opt.substring(2)}</div>`;
+        btn.onclick = ()=> checkAnswer(btn, opt.charAt(0));
+        optionsDiv.appendChild(btn);
+      });
+
+      feedbackDiv.style.display = "none";
+      feedbackDiv.textContent = "";
+
+      updateProgressBar();
+      startTimer();
+    }
+
+    function updateProgressBar(){
+      const pct = (currentQuestion/quizData.length)*100;
+      progressBar.style.width = pct + "%";
+      // small jiggle effect for fun
+      progressBar.classList.remove("pop");
+      void progressBar.offsetWidth;
+      progressBar.classList.add("pop");
+    }
+
+    // timer
+    function startTimer(){
+      timeLeft = TOTAL_TIME;
+      clearInterval(timer);
+      timeLeftDisplay.textContent = timeLeft;
+      timerDisplay.classList.remove("timer-warning");
+      timerDisplay.style.color = '#ffd700';
+
+      timer = setInterval(()=>{
+        timeLeft--;
+        timeLeftDisplay.textContent = timeLeft;
+        if(timeLeft <= 5){
+          timerDisplay.classList.add("timer-warning");
+          timerDisplay.style.color = '#ff9b8a';
+        } else if(timeLeft <= 10){
+          timerDisplay.style.color = '#f1c40f';
+        }
+        if(timeLeft <= 0){
+          clearInterval(timer);
+          checkAnswer(null, null, true);
+        }
+      }, 1000);
+    }
+
+    // check answer
+    function checkAnswer(btn, selected, isTimeout=false){
+      clearInterval(timer);
+      timerDisplay.classList.remove("timer-warning");
+      timerDisplay.style.color = '#ffd700';
+
+      const correct = quizData[currentQuestion].answer;
+      const buttons = document.querySelectorAll("#options button");
+      buttons.forEach(b=>b.disabled=true);
+
+      if(selected === correct){
+        // correct
+        if(btn) btn.classList.add("correct");
+        feedbackDiv.textContent = "✅ Boom! Correct! You're officially smarter than a blockchain expert on a Monday. 🧠";
+        feedbackDiv.classList.remove("bad");
+        playAudio(correctSound);
+        score++;
+        createConfetti(12);
+      } else {
+        // wrong or timeout
+        if(!isTimeout && btn){
+          btn.classList.add("incorrect");
+          btn.style.animation = "wobbleX .6s";
+        }
+        if(isTimeout){
+          feedbackDiv.textContent = "⏰ Too slow! The clock beat you. Maybe your internet is still running on dial-up? 🐌";
+        } else {
+          feedbackDiv.textContent = "❌ EPIC FAIL! Just kidding. Your answer was wrong, but your effort gets a gold star. (Correct one is highlighted)";
+        }
+        playAudio(wrongSound);
+        // highlight correct option
+        buttons.forEach(b=>{
+          if(b.textContent.trim().startsWith(correct)){
+            b.classList.add("correct");
+          }
+        });
+      }
+
+      // show feedback, enable next
+      feedbackDiv.style.display = "flex";
+      nextButton.style.display = "inline-flex";
+      nextButton.classList.add("pop");
+    }
+
+    // next
+    function nextQuestion(){
+      playAudio(nextSound);
+      currentQuestion++;
+      updateProgressBar();
+      if(currentQuestion < quizData.length){
+        loadQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    // show results
+    function showResults(){
+      quizScreen.classList.remove("active");
+      resultsScreen.classList.add("active");
+      if(!bgMusic.paused) bgMusic.pause();
+
+      const totalQuestions = quizData.length;
+      const percentage = Math.round((score/totalQuestions)*100);
+      // animated count up
+      let cur = 0;
+      scorePercentage.textContent = "0%";
+      const ticker = setInterval(()=>{
+        cur++;
+        scorePercentage.textContent = cur + "%";
+        if(cur >= percentage) clearInterval(ticker);
+      }, 12);
+
+      correctCount.textContent = score;
+      incorrectCount.textContent = totalQuestions - score;
+      totalCount.textContent = totalQuestions;
+
+      let message = "";
+      let imageHTML = "";
+      let scoreClass = "";
+
+      if(percentage >= 80){
+        scoreClass = "excellent";
+        message = "🏆 EXCELLENT! You are the Elon Musk of idOS (but with better tweets). Go celebrate with tacos!";
+        imageHTML = '<img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=200&q=60" alt="Trophy">';
+        createConfetti(110);
+        playAudio(resultsSound);
+      } else if(percentage >= 60){
+        scoreClass = "good";
+        message = "👏 NICE! Solid knowledge — you've earned a gold star and a high-five from Mr. Bot.";
+        imageHTML = '<img src="https://images.unsplash.com/photo-1581092581064-e2d9b74bf4d0?auto=format&fit=crop&w=200&q=60" alt="Medal">';
+        createConfetti(60);
+        playAudio(resultsSound);
+      } else if(percentage >= 40){
+        scoreClass = "average";
+        message = "🤓 Not bad! You're half genius, half delightful confusion. Time for a funny GIF break!";
+        imageHTML = '<img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=60" alt="Thumbs Up">';
+        playAudio(resultsSound);
+      } else {
+        scoreClass = "poor";
+        message = "😅 Eh — time to re-read the docs (and eat a cookie). Even robots have bad days!";
+        imageHTML = '<img src="https://images.unsplash.com/photo-1549476472-35804595856c?auto=format&fit=crop&w=200&q=60" alt="Motivation">';
+        playAudio(wrongSound);
+      }
+
+      // set class (for color) with small delay so animation feels smoother
+      setTimeout(()=>{
+        scoreCircle.className = "score-circle " + scoreClass;
+      }, 60);
+
+      resultsImage.innerHTML = imageHTML;
+      resultsMessage.textContent = message;
+    }
+
+    // restart
+    function restartQuiz(){
+      playAudio(clickSound);
+      // reset
+      score = 0;
+      currentQuestion = 0;
+      resultsScreen.classList.remove("active");
+      startScreen.classList.add("active");
+      clearConfetti();
+      updateProgressBar();
+      // attempt resume bg music
+      const p = bgMusic.play();
+      if(p !== undefined) p.catch(()=>{/*ignore*/});
+    }
+
+    // confetti
+    function createConfetti(count){
+      confettiContainer.style.display = "block";
+      confettiContainer.innerHTML = "";
+      for(let i=0;i<count;i++){
+        const el = document.createElement("div");
+        el.className = "confetti";
+        const size = Math.round(Math.random()*12)+6;
+        el.style.width = size + "px"; el.style.height = size + "px";
+        el.style.left = Math.random()*100 + "%";
+        el.style.top = (Math.random()*10 - 5) + "%";
+        el.style.backgroundColor = `hsl(${Math.random()*360} 80% 60%)`;
+        el.style.animationDelay = (Math.random()*1.5) + "s";
+        el.style.transform = `rotate(${Math.random()*360}deg)`;
+        confettiContainer.appendChild(el);
+      }
+      setTimeout(clearConfetti, 5200);
+    }
+
+    function clearConfetti(){
+      confettiContainer.innerHTML = "";
+      confettiContainer.style.display = "none";
+    }
+
+    // initialize on load
+    window.onload = init;
+
+    // Accessibility: keyboard navigation (Enter triggers btn)
+    document.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter'){
+        if(startScreen.classList.contains('active')){
+          startQuiz();
+        } else if(resultsScreen.classList.contains('active')){
+          restartQuiz();
+        } else {
+          // if next button visible, press next
+          if(nextButton.style.display !== 'none') nextQuestion();
+        }
+      }
+    });
+  </script>
+</body>
+</html>
